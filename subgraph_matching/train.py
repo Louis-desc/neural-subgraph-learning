@@ -87,7 +87,7 @@ def train(args, model, logger, in_queue, out_queue):
 
     done = False
     while not done:
-        data_source = make_data_source(args)
+        data_source = make_data_source(args) # Are they loading data / reseting the data object for each batch ? But why ? 
         loaders = data_source.gen_data_loaders(args.eval_interval *
             args.batch_size, args.batch_size, train=True)
         for batch_target, batch_neg_target, batch_neg_query in zip(*loaders):
@@ -173,16 +173,17 @@ def train_loop(args):
 
     workers = []
     for i in range(args.n_workers):
-        worker = mp.Process(target=train, args=(args, model, data_source,
-            in_queue, out_queue))
+        worker = mp.Process(target=train, args=(args, model, data_source,  
+            in_queue, out_queue)) #The function to execute is directly implemented in the worker class. 
         worker.start()
+        print(worker.pid) #Give the workers pid to check if they are still alive. 
         workers.append(worker)
 
     if args.test:
         validation(args, model, test_pts, logger, 0, 0, verbose=True)
     else:
         batch_n = 0
-        for epoch in range(args.n_batches // args.eval_interval):
+        for epoch in range(args.n_batches // args.eval_interval):  #Numbers of epochs is calculated here. 
             for i in range(args.eval_interval):
                 in_queue.put(("step", None))
             for i in range(args.eval_interval):

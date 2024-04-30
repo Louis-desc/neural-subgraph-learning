@@ -1,4 +1,5 @@
 # Python 3.11.9 / Mac ARM M1 / No CUDA, only CPU 
+conda create -n neuromatch python=3.11.9
 conda install matplotlib==3.8.4
 conda install networkx==3.1
 conda install numpy==1.24.3
