@@ -218,7 +218,7 @@ class SAGEConv(pyg_nn.MessagePassing):
         self.lin_update = nn.Linear(out_channels + in_channels,
             out_channels)
 
-    def forward(self, x, edge_index, edge_weight=None, size=None,
+    def forward(self, x, edge_index, size=None,
                 res_n_id=None):
         """
         Args:
@@ -228,15 +228,12 @@ class SAGEConv(pyg_nn.MessagePassing):
                 Required if operating in a bipartite graph and :obj:`concat` is
                 :obj:`True`. (default: :obj:`None`)
         """
-        #edge_index, edge_weight = add_remaining_self_loops(
-        #    edge_index, edge_weight, 1, x.size(self.node_dim))
         edge_index, _ = pyg_utils.remove_self_loops(edge_index)
+        
 
-        return self.propagate(edge_index, size=size, x=x,
-                              edge_weight=edge_weight, res_n_id=res_n_id)
+        return self.propagate(edge_index, size=size, x=x, res_n_id=res_n_id)
 
-    def message(self, x_j, edge_weight):
-        #return x_j if edge_weight is None else edge_weight.view(-1, 1) * x_j
+    def message(self, x_j):
         return self.lin(x_j)
 
     def update(self, aggr_out, x, res_n_id):
